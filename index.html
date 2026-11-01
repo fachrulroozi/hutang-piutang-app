@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#18344f">
+<meta name="description" content="Aplikasi pribadi untuk membuat dan mencetak surat perjanjian hutang piutang dalam format A4.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Surat Perjanjian Hutang Piutang — Corporate A4</title>
+<style>
+:root{
+ --navy:#18344f;--blue:#426783;--gold:#b4935a;--ink:#26323d;
+ --muted:#647382;--line:#cbd4dc;--pale:#f1f4f7;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#e9edf1;color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:10pt;line-height:1.38}
+.toolbar{width:210mm;margin:14px auto 8px;padding:11px 14px;background:#fff;border:1px solid #d8dfe5;border-radius:7px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.toolbar strong{margin-right:auto;color:var(--navy);font-size:13px}
+button{border:0;border-radius:4px;padding:9px 13px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer}
+button.secondary{background:#e8edf2;color:var(--navy)}
+.hint{width:210mm;margin:0 auto 10px;color:#566575;font-size:11px}
+.page{
+ width:210mm;height:297mm;margin:0 auto 16px;background:#fff;position:relative;
+ padding:15mm 17mm 16mm;box-shadow:0 3px 16px #10283d18;overflow:hidden;
+}
+.topline{height:4px;background:linear-gradient(90deg,var(--navy) 0 76%,var(--gold) 76%);margin:-15mm -17mm 8mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:6px}
+.brand{font-size:10px;letter-spacing:1px;font-weight:800;color:var(--navy)}
+.brand-sub{font-size:8px;color:var(--muted);margin-top:2px}
+.meta{text-align:right;font-size:8px;color:var(--muted);line-height:1.5}
+h1{text-align:center;font-size:15px;letter-spacing:.55px;color:var(--navy);margin:10px 0 1px}
+.subtitle{text-align:center;font-size:8px;letter-spacing:1.15px;color:var(--muted);margin:0 0 11px}
+p{margin:4px 0;text-align:justify}
+.intro{margin:0 0 7px}
+.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:7px 0 8px}
+.party{border:1px solid var(--line);border-top:2.5px solid var(--blue);padding:7px 8px}
+.party h3{font-size:8.5px;color:var(--navy);margin:0 0 5px;letter-spacing:.35px}
+.fieldrow{display:grid;grid-template-columns:62px 7px 1fr;gap:2px;font-size:8.4px;margin:2px 0;line-height:1.35}
+.field{min-height:12px;border-bottom:1px dotted #9ba8b4;padding:0 2px}
+[contenteditable=true]{outline:none;cursor:text}
+[contenteditable=true]:focus{background:#fff8df;box-shadow:0 0 0 1px #e3c477}
+h2{font-size:9.2px;color:var(--navy);text-transform:uppercase;letter-spacing:.38px;border-bottom:1px solid var(--line);padding:0 0 3px;margin:9px 0 4px}
+.clause{display:grid;grid-template-columns:17px 1fr;gap:4px;margin:3px 0}
+.clause .n{font-weight:700;color:var(--blue)}
+.amount{background:var(--pale);border-left:3px solid var(--gold);padding:6px 9px;margin:5px 0;font-size:9px}
+.amount strong{color:var(--navy);font-size:10px}
+.fill{display:inline-block;min-width:75px;border-bottom:1px dotted #8b98a4;padding:0 2px}
+.compact-list{margin:3px 0 3px 17px;padding:0}
+.compact-list li{margin:2px 0;text-align:justify}
+.footer{position:absolute;bottom:8mm;left:17mm;right:17mm;border-top:1px solid var(--line);padding-top:4px;display:flex;justify-content:space-between;color:#7a8791;font-size:7.5px}
+.signature-intro{text-align:center;margin:12px 0 14px}
+.signatures{display:grid;grid-template-columns:1fr 1fr;gap:25px;text-align:center;margin-top:13px}
+.signbox{font-size:9px;min-height:92px}
+.signspace{height:51px}
+.signname{display:inline-block;min-width:135px;border-bottom:1px solid #657482;padding:2px 7px;font-weight:700}
+.stamp-row{display:grid;grid-template-columns:1fr 1fr;gap:25px;text-align:center;margin:0 auto;width:75%}
+.stamp{height:42px;width:52px;border:1px dashed #aab4bd;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#87939c;font-size:7px}
+.witnesses{display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:center;margin-top:6px}
+.witness{font-size:8.5px}
+.witness .signspace{height:35px}
+.notes{margin-top:12px;padding:7px 9px;background:#f4f6f8;border:1px solid #d9e0e6}
+.notes b{font-size:8px;color:var(--navy);letter-spacing:.3px}
+.notes p{font-size:7.7px;color:var(--muted);margin:3px 0}
+.page-two-title{margin-top:10px}
+@page{size:A4;margin:0}
+@media print{
+ body{background:#fff}
+ .toolbar,.hint{display:none!important}
+ .page{margin:0;width:210mm;height:297mm;box-shadow:none;page-break-after:always;break-after:page}
+ .page:last-of-type{page-break-after:auto;break-after:auto}
+ [contenteditable=true]:focus{background:transparent;box-shadow:none}
+}
+@media screen and (max-width:800px){
+ .page{width:100%;height:auto;min-height:297mm;padding:22px;overflow:visible}
+ .topline{margin:-22px -22px 14px}
+ .toolbar,.hint{width:calc(100% - 20px)}
+ .footer{position:static;margin-top:24px}
+ .party-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="toolbar">
+ <strong>Hutang Piutang · Personal Legal Document App</strong>
+ <button id="installBtn" class="secondary" hidden>Install aplikasi</button>
+ <button class="secondary" onclick="saveDraft(true)">Simpan isian</button>
+ <button class="secondary" onclick="restoreDraft()">Muat isian tersimpan</button>
+ <button onclick="window.print()">Print / Simpan PDF</button>
+ <button class="secondary" onclick="clearDraft()">Hapus simpanan</button>
+ <span id="saveStatus" aria-live="polite" style="font-size:11px;color:#647382;width:100%">Isian dapat disimpan di browser perangkat ini.</span>
+</div>
+<div class="hint">Aplikasi template offline: edit teks dalam tanda kurung siku, lalu klik <b>Simpan isian</b> agar draft tersimpan di browser/perangkat ini. Untuk PDF, pilih Print / Simpan PDF, kertas A4, skala 100%, dan matikan header/footer browser. File ini dapat dibuka kembali tanpa internet.</div>
+
+<section class="page">
+ <div class="topline"></div>
+ <header class="header">
+  <div><div class="brand" contenteditable="true">DOKUMEN PERJANJIAN</div><div class="brand-sub" contenteditable="true">Perjanjian perdata · Hutang Piutang</div></div>
+  <div class="meta">
+   <div contenteditable="true">NOMOR: [____ / ____ / ____]</div>
+   <div contenteditable="true">TEMPAT: [________________]</div>
+   <div contenteditable="true">TANGGAL: [________________]</div>
+  </div>
+ </header>
+ <h1>SURAT PERJANJIAN HUTANG PIUTANG</h1>
+ <div class="subtitle">PERJANJIAN ANTARA DUA BELAH PIHAK</div>
+
+ <p class="intro">Pada hari <span class="fill" contenteditable="true">[hari]</span>, tanggal <span class="fill" contenteditable="true">[tanggal, bulan, tahun]</span>, bertempat di <span class="fill" contenteditable="true">[kota/tempat]</span>, Para Pihak yang bertanda tangan di bawah ini:</p>
+
+ <div class="party-grid">
+  <div class="party">
+   <h3>PIHAK PERTAMA · PEMBERI PINJAMAN</h3>
+   <div class="fieldrow"><span>Nama</span><span>:</span><span class="field" contenteditable="true">[Nama lengkap]</span></div>
+   <div class="fieldrow"><span>NIK</span><span>:</span><span class="field" contenteditable="true">[Nomor KTP]</span></div>
+   <div class="fieldrow"><span>Pekerjaan</span><span>:</span><span class="field" contenteditable="true">[Pekerjaan]</span></div>
+   <div class="fieldrow"><span>Alamat</span><span>:</span><span class="field" contenteditable="true">[Alamat lengkap]</span></div>
+   <div class="fieldrow"><span>No. HP</span><span>:</span><span class="field" contenteditable="true">[Nomor telepon]</span></div>
+  </div>
+  <div class="party">
+   <h3>PIHAK KEDUA · PENERIMA PINJAMAN</h3>
+   <div class="fieldrow"><span>Nama</span><span>:</span><span class="field" contenteditable="true">[Nama lengkap]</span></div>
+   <div class="fieldrow"><span>NIK</span><span>:</span><span class="field" contenteditable="true">[Nomor KTP]</span></div>
+   <div class="fieldrow"><span>Pekerjaan</span><span>:</span><span class="field" contenteditable="true">[Pekerjaan]</span></div>
+   <div class="fieldrow"><span>Alamat</span><span>:</span><span class="field" contenteditable="true">[Alamat lengkap]</span></div>
+   <div class="fieldrow"><span>No. HP</span><span>:</span><span class="field" contenteditable="true">[Nomor telepon]</span></div>
+  </div>
+ </div>
+ <p>Selanjutnya disebut secara bersama-sama sebagai <b>“Para Pihak”</b>. Pihak Pertama setuju memberikan pinjaman kepada Pihak Kedua, dan Pihak Kedua setuju menerima serta mengembalikan pinjaman berdasarkan syarat dan ketentuan berikut.</p>
+
+ <h2>Pasal 1 · Nilai dan Penyerahan Pinjaman</h2>
+ <div class="clause"><span class="n">1.1</span><p>Pihak Pertama memberikan pinjaman kepada Pihak Kedua sebesar:</p></div>
+ <div class="amount"><strong>Rp <span contenteditable="true">[NOMINAL ANGKA]</span></strong><br><span contenteditable="true">([Terbilang lengkap dalam huruf])</span></div>
+ <div class="clause"><span class="n">1.2</span><p>Dana diserahkan pada <span class="fill" contenteditable="true">[tanggal]</span> melalui <span class="fill" contenteditable="true">[tunai/transfer]</span> dengan keterangan <span class="fill" contenteditable="true">[rekening/bukti serah terima]</span>.</p></div>
+ <div class="clause"><span class="n">1.3</span><p>Bukti transfer, kuitansi, atau tanda terima yang disetujui Para Pihak menjadi bagian tidak terpisahkan dari perjanjian ini.</p></div>
+
+ <h2>Pasal 2 · Jangka Waktu dan Pembayaran</h2>
+ <div class="clause"><span class="n">2.1</span><p>Pihak Kedua wajib melunasi pinjaman paling lambat pada <span class="fill" contenteditable="true">[tanggal jatuh tempo]</span>.</p></div>
+ <div class="clause"><span class="n">2.2</span><p>Pembayaran disepakati dengan memilih salah satu cara berikut:</p></div>
+ <ol class="compact-list">
+  <li>Pelunasan sekaligus pada tanggal jatuh tempo; atau</li>
+  <li>Angsuran sebesar Rp <span class="fill" contenteditable="true">[jumlah]</span> setiap <span class="fill" contenteditable="true">[minggu/bulan]</span>, mulai <span class="fill" contenteditable="true">[tanggal]</span> sampai <span class="fill" contenteditable="true">[tanggal]</span>, sesuai jadwal terlampir.</li>
+ </ol>
+ <div class="clause"><span class="n">2.3</span><p>Pembayaran dilakukan secara <span class="fill" contenteditable="true">[tunai/transfer]</span> kepada Pihak Pertama melalui <span class="fill" contenteditable="true">[rekening/tujuan pembayaran]</span>. Setiap pembayaran harus disertai bukti penerimaan.</p></div>
+
+ <h2>Pasal 3 · Bunga dan Biaya</h2>
+ <p>Pinjaman ini disepakati <span class="fill" contenteditable="true">[tanpa bunga / berbunga ____ % per ____]</span>. Biaya administrasi atau biaya lain adalah <span class="fill" contenteditable="true">[nihil/uraikan]</span>. Biaya di luar kesepakatan tertulis tidak dapat ditagihkan.</p>
+
+ <h2>Pasal 4 · Hak dan Kewajiban</h2>
+ <div class="clause"><span class="n">4.1</span><p>Pihak Pertama berhak menerima pengembalian pinjaman sesuai perjanjian dan wajib menyerahkan dana sebagaimana Pasal 1.</p></div>
+ <div class="clause"><span class="n">4.2</span><p>Pihak Kedua berhak menerima dana pinjaman, wajib menggunakannya secara bertanggung jawab, serta mengembalikannya sesuai jadwal.</p></div>
+ <div class="clause"><span class="n">4.3</span><p>Para Pihak wajib memberitahukan perubahan alamat atau kontak secara tertulis kepada pihak lainnya.</p></div>
+
+ <h2>Pasal 5 · Keterlambatan dan Wanprestasi</h2>
+ <div class="clause"><span class="n">5.1</span><p>Jika pembayaran terlambat, Pihak Pertama menyampaikan teguran tertulis dan memberikan waktu penyelesaian selama <span class="fill" contenteditable="true">[____ hari kalender]</span> sejak teguran diterima.</p></div>
+ <div class="clause"><span class="n">5.2</span><p>Jika kewajiban tetap tidak dipenuhi setelah tenggang waktu tersebut, Para Pihak menempuh penyelesaian sesuai Pasal 8. Kompensasi keterlambatan (jika disepakati): <span class="fill" contenteditable="true">[ketentuan/nihil]</span>.</p></div>
+
+ <div class="footer"><span>SURAT PERJANJIAN HUTANG PIUTANG</span><span>HALAMAN 1 DARI 2</span></div>
+</section>
+
+<section class="page">
+ <div class="topline"></div>
+ <header class="header">
+  <div><div class="brand">KETENTUAN LANJUTAN</div><div class="brand-sub">Bagian kedua · Perjanjian hutang piutang</div></div>
+  <div class="meta"><div contenteditable="true">NOMOR: [____ / ____ / ____]</div><div contenteditable="true">TANGGAL: [________________]</div></div>
+ </header>
+ <h1 class="page-two-title">KETENTUAN LANJUTAN & PERSETUJUAN</h1>
+ <div class="subtitle">LANJUTAN SURAT PERJANJIAN HUTANG PIUTANG</div>
+
+ <h2>Pasal 6 · Pelunasan Dipercepat</h2>
+ <p>Pihak Kedua dapat melunasi pinjaman sebelum jatuh tempo dengan memberitahukan Pihak Pertama. Pelunasan dipercepat tidak dikenakan penalti, kecuali disepakati tertulis sebagai berikut: <span class="fill" contenteditable="true">[ketentuan khusus/nihil]</span>.</p>
+
+ <h2>Pasal 7 · Perubahan dan Keadaan Kahar</h2>
+ <div class="clause"><span class="n">7.1</span><p>Perubahan atau tambahan perjanjian hanya berlaku apabila dibuat tertulis dan ditandatangani Para Pihak.</p></div>
+ <div class="clause"><span class="n">7.2</span><p>Keadaan kahar (*force majeure*) adalah peristiwa di luar kendali wajar pihak terdampak yang secara langsung menghalangi pelaksanaan kewajiban. Pihak terdampak wajib segera memberi pemberitahuan; selanjutnya Para Pihak bermusyawarah menentukan penyesuaian yang wajar.</p></div>
+
+ <h2>Pasal 8 · Penyelesaian Perselisihan</h2>
+ <p>Perselisihan diselesaikan terlebih dahulu melalui musyawarah dalam waktu <span class="fill" contenteditable="true">[____ hari kalender]</span>. Jika tidak tercapai kesepakatan, penyelesaian dilakukan menurut hukum Republik Indonesia, dengan pilihan domisili hukum di <span class="fill" contenteditable="true">[Pengadilan Negeri, bila relevan]</span>, sepanjang diperbolehkan peraturan perundang-undangan.</p>
+
+ <h2>Pasal 9 · Penutup</h2>
+ <div class="clause"><span class="n">9.1</span><p>Perjanjian dibuat secara sadar, tanpa paksaan, kekhilafan, atau penipuan. Para Pihak menyatakan telah membaca, memahami, dan menyetujui seluruh isinya.</p></div>
+ <div class="clause"><span class="n">9.2</span><p>Perjanjian berlaku sejak ditandatangani dan dibuat dalam 2 (dua) rangkap asli, masing-masing mempunyai kekuatan pembuktian yang sama; setiap pihak menerima 1 (satu) rangkap.</p></div>
+ <div class="clause"><span class="n">9.3</span><p>Hal yang belum diatur akan disepakati kemudian secara tertulis dan menjadi bagian tidak terpisahkan dari perjanjian ini.</p></div>
+
+ <p class="signature-intro">Dibuat di <span class="fill" contenteditable="true">[Kota]</span>, pada tanggal <span class="fill" contenteditable="true">[Tanggal, Bulan, Tahun]</span>.<br>Para Pihak menyatakan setuju dan menandatangani perjanjian ini.</p>
+
+ <div class="signatures">
+  <div class="signbox"><b>PIHAK PERTAMA</b><br><span style="color:var(--muted)">Pemberi Pinjaman</span><div class="signspace"></div><div class="signname" contenteditable="true">[Nama lengkap]</div></div>
+  <div class="signbox"><b>PIHAK KEDUA</b><br><span style="color:var(--muted)">Penerima Pinjaman</span><div class="signspace"></div><div class="signname" contenteditable="true">[Nama lengkap]</div></div>
+ </div>
+ <div class="stamp-row">
+  <div class="stamp">METERAI<br>SESUAI KETENTUAN</div>
+  <div class="stamp">METERAI<br>JIKA DIPERLUKAN</div>
+ </div>
+
+ <h2>Saksi-Saksi</h2>
+ <div class="witnesses">
+  <div class="witness"><b>SAKSI 1</b><div class="signspace"></div><div class="signname" contenteditable="true">[Nama lengkap]</div><div contenteditable="true">NIK: [________________]</div></div>
+  <div class="witness"><b>SAKSI 2</b><div class="signspace"></div><div class="signname" contenteditable="true">[Nama lengkap]</div><div contenteditable="true">NIK: [________________]</div></div>
+ </div>
+
+ <div class="notes">
+  <b>LAMPIRAN & CATATAN PENGISIAN</b>
+  <p><b>Lampiran yang disarankan:</b> (1) salinan identitas Para Pihak; (2) bukti penyerahan dana/kuitansi/transfer; (3) jadwal angsuran dan bukti pembayaran, jika ada.</p>
+  <p>Ganti seluruh teks [ ... ], hapus opsi yang tidak dipilih, dan pastikan nominal angka sama dengan terbilang. Isi tanggal penyerahan, jatuh tempo, cara pembayaran, serta rincian angsuran secara jelas.</p>
+  <p>Template ini merupakan format administrasi umum, bukan pengganti nasihat hukum. Untuk pinjaman bernilai besar, jaminan/agunan, penjamin, bunga, atau risiko sengketa, mintalah pemeriksaan notaris/advokat. Ketentuan meterai mengikuti peraturan yang berlaku; meterai bukan pengganti tanda tangan maupun bukti penyerahan uang.</p>
+ </div>
+
+ <div class="footer"><span>SURAT PERJANJIAN HUTANG PIUTANG</span><span>HALAMAN 2 DARI 2</span></div>
+</section>
+</body>
+</html>

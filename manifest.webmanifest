@@ -1,0 +1,18 @@
+{
+  "name": "Hutang Piutang — Personal Document App",
+  "short_name": "Hutang Piutang",
+  "description": "Aplikasi pribadi untuk membuat surat perjanjian hutang piutang A4.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#18344f",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
